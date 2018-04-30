@@ -84,7 +84,7 @@ def FindTags(_text):
 	print tags
 	print ""
 	x = {tag.strip("#") for tag in tags.split() if tag.startswith("#")}
-	return str(x.pop()).strip('"')
+	return x.pop()
 
 #Find the room that corresponds to the hashtag
 def FindRoomToAdd(_text):
@@ -158,6 +158,7 @@ def GetMessageText(_messageID):
 	tempText = resp["text"]
 	text = json.dumps(tempText)
 	
+	text = text.strip('"')
 	text = text.replace("\u2019", "\'")
 	text = text.replace("\u201c", "\"")
 	text = text.replace("\u201d", "\"")
