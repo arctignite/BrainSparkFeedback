@@ -89,7 +89,7 @@ def FindRoomToAdd(_text):
 	tag = str(FindTags(_text))
 
 	#checks if a room for that tag exists.
-	for x in session.query(Request).filter(Request.id == Int(tag)):
+	for x in session.query(Request).filter(Request.id == int(tag)):
 		roomFound = True
 		return x.resolutionRoomID
 			
@@ -102,7 +102,7 @@ def AddToExistingComment(_text, _userRoomID):
 	tag = str(FindTags(_text))
 
 	#checks if a room for that tag exists.
-	for x in session.query(Request).filter(Request.id == Int(tag)):
+	for x in session.query(Request).filter(Request.id == int(tag)):
 		if str(x.requesterID) == str(_userRoomID):
 			commentFound = True
 			PostSparkMessage("New message has been send by requester: " + _text.replace("#" + tag + " ", ""), x.resolutionRoomID)
@@ -163,7 +163,7 @@ def CloseRoom(_roomID):
 
 def ResolveRoom(_text):
 	tag = FindTags(_text)
-	for x in session.query(Request).filter(Request.id == Int(tag)):
+	for x in session.query(Request).filter(Request.id == int(tag)):
 		CloseRoom(tag)
 
 
