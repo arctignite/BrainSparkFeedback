@@ -181,7 +181,7 @@ def GetMessageText(_messageID):
 	text = text.replace("\u201d", "\"")
 	return text
 
-def RemoveMessage(_messageId)
+def RemoveMessage(_messageId):
 	header = setHeaders()
 	uri = "https://api.ciscospark.com/v1/messages/" + str(_messageId)
 	resp = requests.delete(uri, headers=header)
