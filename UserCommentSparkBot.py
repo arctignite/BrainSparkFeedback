@@ -39,8 +39,7 @@ def CreateRequest(_requestText, _requesterRoomId):
 	responseRoomID = CreateSparkRoom(str(ID))
 
 	#post to managerRoom and get id of the message
-	PostSparkMessage("A new question has been asked: " + str(_requestText) + " --- Type '@" + str(botName) + " claim #" + str(ID) + "' in order to get added to the resolution Space for this question", managerRoomID)
-	messageId = GetLastMessage(managerRoomID)
+	messageId = PostSparkMessage("A new question has been asked: " + str(_requestText) + " --- Type '@" + str(botName) + " claim #" + str(ID) + "' in order to get added to the resolution Space for this question", managerRoomID)
 
 	#Post all information to the db
 	request = Request(_requesterRoomId, responseRoomID, messageId)
@@ -133,6 +132,9 @@ def PostSparkMessage(message, roomId):
 	message = {"roomId":roomId,"text":message}
 	uri = 'https://api.ciscospark.com/v1/messages'
 	resp = requests.post(uri, json=message, headers=header)
+	var = resp.json()
+	messageID = var["id"]
+	return messageID
 
 #Relay the message that was posted to the user who requested the case
 def RelayManagerMessage(_message, _roomID):
@@ -155,19 +157,6 @@ def setHeaders():
     accessToken_hdr = 'Bearer ' + ACCESS_TOKEN
     spark_header = {'Authorization': accessToken_hdr, 'Content-Type': 'application/json; charset=utf-8'}
     return (spark_header)
-
-def GetLastMessage(_roomID):
-	header = setHeaders()
-	uri = "https://api.ciscospark.com/v1/messages"
-	roomId = {"roomId":_roomID}
-	resp = requests.get(uri, json=roomId, headers=header)
-	resp = resp.json()
-	for message in resp["items"]:
-		messageID = message["id"]
-		break
-
-	print messageID
-	return messageID
 
 
 def GetMessageText(_messageID):
