@@ -158,7 +158,7 @@ def setHeaders():
 
 def GetLastMessage(_roomID):
 	header = setHeaders()
-	uri = "https://api.ciscospark.com/v1/messages/"
+	uri = "https://api.ciscospark.com/v1/messages"
 	roomId = {"roomId":_roomID}
 	resp = requests.get(uri, json=roomId, headers=header)
 	resp = resp.json()
