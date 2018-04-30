@@ -86,7 +86,8 @@ def FindTags(_text):
 #Find the room that corresponds to the hashtag
 def FindRoomToAdd(_text):
 	roomFound = False
-	tag = str(FindTags(_text))
+	tag = FindTags(_text)
+	print tag
 
 	#checks if a room for that tag exists.
 	for x in session.query(Request).filter(Request.id == int(tag)):
