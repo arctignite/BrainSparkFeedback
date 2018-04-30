@@ -28,64 +28,26 @@ commentList = []
 #temp variable
 test = True
 
-class UserComment():
-	def __init__ (self, _requestText, _requesterRoomId):
-		#assign an ID to the conversation, and make sure the global counter increases.
-		global conversationCounter
-		global commentList
-		global botName
+def CreateRequest(_requestText, _requesterRoomId):
+	ID = session.query(Request).count() + 1
 
-		print session.query(Request).count()
+	#confirm submission of question to user
+	PostSparkMessage("Thank you for your feedback, we will respond as soon as possible. If you'd like to add anything to your feedback, please add #" + str(ID) + " to the message", _requesterRoomId)
 
-		self.id = conversationCounter + 1
-		conversationCounter += 1
+	#create responseRoom
+	responseRoomID = CreateSparkRoom(str(ID))
 
-		#initial question Text
-		self.request = str(_requestText)
+	#Post all information to the db
+	request = Request(_requesterRoomId, responseRoomID)
+	session.add(request)
+	session.commit()
 
-		#roomID for the person asking the question
-		self.requesterRoomID = _requesterRoomId
+	#post question in newly created room
+	PostSparkMessage("A new question has been asked: " + str(_requestText) + " --- Type '@" + str(botName) + " claim #" + str(ID) + "' in order to get added to the resolution Space for this question", managerRoomID)
+	PostSparkMessage("The following question was asked: " + _requestText, responseRoomID)
+	PostSparkMessage("In order to reply to this question, please address the answer to @" + str(botName), responseRoomID)
 
-		#roomID for the room opened for this request
-		self.responseRoomID = CreateSparkRoom(str(self.id))
 
-		#add to the SQL db
-		request = Request(self.requesterRoomID, self.responseRoomID)
-		session.add(request)
-		session.commit()
-
-		
-
-		for req in session.query(Request).filter(Request.resolutionRoomID == self.responseRoomID):
-			print req.id, req.resolutionRoomID
-
-		#post question in newly created room
-		PostSparkMessage("A new question has been asked: " + str(self.request) + " --- Type '@" + str(botName) + " claim #" + str(self.id) + "' in order to get added to the resolution Space for this question", managerRoomID)
-		PostSparkMessage("The following question was asked: " + self.request, self.responseRoomID)
-		PostSparkMessage("In order to reply to this question, please address the answer to @" + str(botName), self.responseRoomID)
-
-		#confirm submission of question to user
-		PostSparkMessage("Thank you for your feedback, we will respond as soon as possible. If you'd like to add anything to your feedback, please add #" + str(self.id) + " to the message", self.requesterRoomID)
-
-	def CloseCase(self):
-		CloseRoom(self.responseRoomID)
-		
-		for x in commentList:
-			if str(self.id) == str(x.GetID()):
-				commentList.remove(x)
-				break
-
-	def GetID(self):
-		return self.id
-
-	def GetResponseRoomID(self):
-		return self.responseRoomID
-
-	def GetRequesterRoomID(self):
-		return self.requesterRoomID
-
-def createRequest():
-	id = session.query(Request).count() + 1
 
 def findRoom(the_header,room_name):
 	roomId=None
@@ -126,10 +88,9 @@ def FindRoomToAdd(_text):
 	tag = str(FindTags(_text))
 
 	#checks if a room for that tag exists.
-	for x in commentList:
-		if tag == str(x.GetID()):
-			roomFound = True
-			return x.GetResponseRoomID()
+	for x in session.query(Request).filter(Request.id == Int(tag)):
+		roomFound = True
+		return x.resolutionRoomID
 			
 	if roomFound == False:
 		return False
@@ -140,11 +101,10 @@ def AddToExistingComment(_text, _userRoomID):
 	tag = str(FindTags(_text))
 
 	#checks if a room for that tag exists.
-	for x in commentList:
-		if tag == str(x.GetID()):
-			if str(x.GetRequesterRoomID() == str(_userRoomID)):
-				commentFound = True
-				PostSparkMessage("New message has been send by requester: " + _text.replace("#" + tag + " ", ""), x.GetResponseRoomID())
+	for x in session.query(Request).filter(Request.id == Int(tag)):
+		if str(x.requesterID) == str(_userRoomID):
+			commentFound = True
+			PostSparkMessage("New message has been send by requester: " + _text.replace("#" + tag + " ", ""), x.resolutionRoomID)
 			
 	if commentFound == False:
 		PostSparkMessage("room not found", _userRoomID)
@@ -171,12 +131,10 @@ def RelayManagerMessage(_message, _roomID):
 		roomID = _roomID
 		roomFound = False
 
-		for x in commentList:
-			requesterRoomID = x.GetResponseRoomID()
-			if str(roomID) == str(requesterRoomID):
-				roomFound = True
-				PostSparkMessage("You've received the following response: " + text + " --- to respond, use #" + str(x.GetID()), x.GetRequesterRoomID())
-				PostSparkMessage("If this fully answered your question, type '#" + str(x.GetID()) + " resolved'", x.GetRequesterRoomID())
+		for x in session.query(Request).filter(Request.resolutionRoomID == str(roomID)):
+			roomFound = True
+				PostSparkMessage("You've received the following response: " + text + " --- to respond, use #" + str(x.id), x.requesterID())
+				PostSparkMessage("If this fully answered your question, type '#" + str(x.id) + " resolved'", x.requesterID())
 
 		if roomFound == False:
 			PostSparkMessage("Something has gone wrong with this request: requester ID not found", roomID)
@@ -204,10 +162,8 @@ def CloseRoom(_roomID):
 
 def ResolveRoom(_text):
 	tag = FindTags(_text)
-	for x in commentList:
-		if tag == str(x.GetID()):
-			x.CloseCase()
-			break
+	for x in session.query(Request).filter(Request.id == Int(tag)):
+		CloseRoom(tag)
 
 
 @post('/')
@@ -247,7 +203,7 @@ def index(request):
 				RelayManagerMessage(messageText, room_id)
 
 			else:
-				commentList.append(UserComment(messageText, room_id))
+				CreateRequest(messageText, room_id)
 
 	return "true"
 
