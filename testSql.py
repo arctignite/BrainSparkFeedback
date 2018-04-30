@@ -10,11 +10,11 @@ Session = sessionmaker(bind=engine)
 session = Session()
  
 # Create objects  
-user = Request("id3", "room3")
-session.add(user)
+request = Request("id3", "room3")
+session.add(request)
  
-user = Request("id4","room4")
-session.add(user)
+request = Request("id4","room4")
+session.add(request)
  
 # commit the record the database
 session.commit()
