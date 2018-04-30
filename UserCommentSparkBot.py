@@ -53,7 +53,7 @@ class UserComment():
 		session.commit()
 
 		for req in session.query(Request).filter(Request.requesterID == self.requesterRoomID):
-			print req.id, req.requesterRoomID
+			print req.id, req.requesterID
 
 		#post question in newly created room
 		PostSparkMessage("A new question has been asked: " + str(self.request) + " --- Type '@" + str(botName) + " claim #" + str(self.id) + "' in order to get added to the resolution Space for this question", managerRoomID)
