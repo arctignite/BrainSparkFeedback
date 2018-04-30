@@ -133,8 +133,8 @@ def RelayManagerMessage(_message, _roomID):
 
 		for x in session.query(Request).filter(Request.resolutionRoomID == str(roomID)):
 			roomFound = True
-				PostSparkMessage("You've received the following response: " + text + " --- to respond, use #" + str(x.id), x.requesterID())
-				PostSparkMessage("If this fully answered your question, type '#" + str(x.id) + " resolved'", x.requesterID())
+			PostSparkMessage("You've received the following response: " + text + " --- to respond, use #" + str(x.id), x.requesterID)
+			PostSparkMessage("If this fully answered your question, type '#" + str(x.id) + " resolved'", x.requesterID)
 
 		if roomFound == False:
 			PostSparkMessage("Something has gone wrong with this request: requester ID not found", roomID)
