@@ -38,13 +38,16 @@ def CreateRequest(_requestText, _requesterRoomId):
 	#create responseRoom
 	responseRoomID = CreateSparkRoom(str(ID))
 
+	#post to managerRoom and get id of the message
+	PostSparkMessage("A new question has been asked: " + str(_requestText) + " --- Type '@" + str(botName) + " claim #" + str(ID) + "' in order to get added to the resolution Space for this question", managerRoomID)
+	messageId = GetLastMessage(managerRoomID)
+
 	#Post all information to the db
-	request = Request(_requesterRoomId, responseRoomID)
+	request = Request(_requesterRoomId, responseRoomID, messageId)
 	session.add(request)
 	session.commit()
 
-	#post question in newly created room
-	PostSparkMessage("A new question has been asked: " + str(_requestText) + " --- Type '@" + str(botName) + " claim #" + str(ID) + "' in order to get added to the resolution Space for this question", managerRoomID)
+	#post question in newly created room	
 	PostSparkMessage("The following question was asked: " + _requestText, responseRoomID)
 	PostSparkMessage("In order to reply to this question, please address the answer to @" + str(botName), responseRoomID)
 
@@ -153,6 +156,16 @@ def setHeaders():
     spark_header = {'Authorization': accessToken_hdr, 'Content-Type': 'application/json; charset=utf-8'}
     return (spark_header)
 
+def GetLastMessage(_roomID):
+	header = setHeaders()
+	uri = "https://api.ciscospark.com/v1/messages/"
+	roomId = {"roomId":_roomID}
+	resp = requests.get(uri, json=roomId, headers=header)
+	resp = resp.json()
+	messageID = resp['items']['id']
+	return messageID
+
+
 def GetMessageText(_messageID):
 	header = setHeaders()
 	uri = "https://api.ciscospark.com/v1/messages/" + str(_messageID)
@@ -167,6 +180,12 @@ def GetMessageText(_messageID):
 	text = text.replace("\u201d", "\"")
 	return text
 
+def RemoveMessage(_messageId)
+	header = setHeaders()
+	uri = "https://api.ciscospark.com/v1/messages/" + str(_messageId)
+	resp = requests.delete(uri, headers=header)
+
+
 def CloseRoom(_roomID):
 	header = setHeaders()
 	uri = "https://api.ciscospark.com/v1/rooms/" + str(_roomID)
@@ -175,8 +194,11 @@ def CloseRoom(_roomID):
 def ResolveRoom(_text):
 	tag = FindTags(_text)
 	for x in session.query(Request).filter(Request.id == int(tag)):
-		CloseRoom(tag)
-
+		CloseRoom(x.resolutionRoomID)
+		RemoveMessage(x.messageID)
+		x.requesterID = None
+        x.resolutionRoomID = None
+        x.messageID = None
 
 @post('/')
 def index(request):

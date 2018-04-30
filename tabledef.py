@@ -15,12 +15,14 @@ class Request(Base):
     id = Column(Integer, primary_key=True)
     requesterID = Column(String)
     resolutionRoomID = Column(String)
+    messageID = Column(String)
  
     #----------------------------------------------------------------------
-    def __init__(self, requesterID, resolutionRoomID):
+    def __init__(self, requesterID, resolutionRoomID, messageID):
         """"""
         self.requesterID = requesterID
         self.resolutionRoomID = resolutionRoomID
+        self.messageID = messageID
  
 # create tables
 Base.metadata.create_all(engine)
