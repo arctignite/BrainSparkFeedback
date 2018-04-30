@@ -1,7 +1,16 @@
 import requests
 import json
 from itty import *
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from tabledef import *
 
+#For SQL database
+engine = create_engine('sqlite:///brainSparkRequests.db', echo=False)
+ 
+# create a Session
+Session = sessionmaker(bind=engine)
+session = Session()
 
 #################################
 # CHANGE VARIABLES TO MATCH BOT #
@@ -37,6 +46,14 @@ class UserComment():
 
 		#roomID for the room opened for this request
 		self.responseRoomID = CreateSparkRoom(str(self.id))
+
+		#add to the SQL db
+		request = Request(self.requesterRoomID, self.responseRoomID)
+		session.add(request)
+		session.commit()
+
+		for req in session.query(Request).filter(Request.requesterID == self.requesterRoomID):
+			print req.id, req.requesterRoomID
 
 		#post question in newly created room
 		PostSparkMessage("A new question has been asked: " + str(self.request) + " --- Type '@" + str(botName) + " claim #" + str(self.id) + "' in order to get added to the resolution Space for this question", managerRoomID)
