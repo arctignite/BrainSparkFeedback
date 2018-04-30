@@ -100,7 +100,7 @@ def FindRoomToAdd(_text):
 #Find the room that corresponds to the hashtag
 def AddToExistingComment(_text, _userRoomID):
 	commentFound = False
-	tag = str(FindTags(_text))
+	tag = FindTags(_text)
 
 	#checks if a room for that tag exists.
 	for x in session.query(Request).filter(Request.id == int(tag)):
