@@ -105,11 +105,14 @@ def AddToExistingComment(_text, _userRoomID):
 	commentFound = False
 	tag = FindTags(_text)
 
+	text = _text.replace("#" + tag + " ", "")
+	text = text.replace("#" + tag, "")
+
 	#checks if a room for that tag exists.
 	for x in session.query(Request).filter(Request.id == int(tag)):
 		if str(x.requesterID) == str(_userRoomID):
 			commentFound = True
-			PostSparkMessage("New message has been send by requester: " + _text.replace("#" + tag + " ", ""), x.resolutionRoomID)
+			PostSparkMessage("New message has been send by requester: " + text, x.resolutionRoomID)
 			
 	if commentFound == False:
 		PostSparkMessage("room not found", _userRoomID)
