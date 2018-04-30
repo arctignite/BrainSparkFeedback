@@ -162,7 +162,10 @@ def GetLastMessage(_roomID):
 	roomId = {"roomId":_roomID}
 	resp = requests.get(uri, json=roomId, headers=header)
 	resp = resp.json()
-	messageID = resp["items"]["id"]
+	for message in resp["items"]:
+		messageID = message["id"]
+		break
+
 	print messageID
 	return messageID
 
