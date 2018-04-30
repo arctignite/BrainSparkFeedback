@@ -35,6 +35,8 @@ class UserComment():
 		global commentList
 		global botName
 
+		print session.query(Request).count()
+
 		self.id = conversationCounter + 1
 		conversationCounter += 1
 
@@ -52,7 +54,7 @@ class UserComment():
 		session.add(request)
 		session.commit()
 
-		print session.query(Request).count()
+		
 
 		for req in session.query(Request).filter(Request.resolutionRoomID == self.responseRoomID):
 			print req.id, req.resolutionRoomID
@@ -82,6 +84,8 @@ class UserComment():
 	def GetRequesterRoomID(self):
 		return self.requesterRoomID
 
+def createRequest():
+	id = session.query(Request).count() + 1
 
 def findRoom(the_header,room_name):
 	roomId=None
