@@ -163,6 +163,7 @@ def GetLastMessage(_roomID):
 	resp = requests.get(uri, json=roomId, headers=header)
 	resp = resp.json()
 	messageID = resp['items']['id']
+	print messageID
 	return messageID
 
 
@@ -194,7 +195,7 @@ def CloseRoom(_roomID):
 def ResolveRoom(_text):
 	tag = FindTags(_text)
 	for x in session.query(Request).filter(Request.id == int(tag)):
-		CloseRoom(x.resolutionRoomID)
+		CloseRoom(x.resolutionRoo.exitmID)
 		RemoveMessage(x.messageID)
 		x.requesterID = None
         x.resolutionRoomID = None
