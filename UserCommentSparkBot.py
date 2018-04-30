@@ -187,7 +187,7 @@ def CloseRoom(_roomID):
 def ResolveRoom(_text):
 	tag = FindTags(_text)
 	for x in session.query(Request).filter(Request.id == int(tag)):
-		CloseRoom(x.resolutionRoo.exitmID)
+		CloseRoom(x.resolutionRoom)
 		RemoveMessage(x.messageID)
 		x.requesterID = None
         x.resolutionRoomID = None
