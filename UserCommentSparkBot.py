@@ -80,6 +80,9 @@ def CreateSparkRoom(_requestID):
 #Looks through the text to look for any #xxx and returns those in a set.
 def FindTags(_text):
 	tags = str(_text)
+	print ""
+	print tags
+	print ""
 	x = {tag.strip("#") for tag in tags.split() if tag.startswith("#")}
 	return str(x.pop()).strip('"')
 
