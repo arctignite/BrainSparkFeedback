@@ -10,10 +10,10 @@ Session = sessionmaker(bind=engine)
 session = Session()
  
 # Create objects  
-user = Student("id1", "room1")
+user = Request("id1", "room1")
 session.add(user)
  
-user = Student("id2","room2")
+user = Request("id2","room2")
 session.add(user)
  
 # commit the record the database
