@@ -81,7 +81,7 @@ def CreateSparkRoom(_requestID):
 def FindTags(_text):
 	tags = str(_text)
 	x = {tag.strip("#") for tag in tags.split() if tag.startswith("#")}
-	return x.pop()
+	return str(x.pop()).strip('"')
 
 #Find the room that corresponds to the hashtag
 def FindRoomToAdd(_text):
