@@ -192,6 +192,7 @@ def ResolveRoom(_text):
 		x.requesterID = None
         x.resolutionRoomID = None
         x.messageID = None
+        session.commit()
 
 @post('/')
 def index(request):
