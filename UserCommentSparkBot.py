@@ -16,7 +16,9 @@ session = Session()
 # CHANGE VARIABLES TO MATCH BOT #
 #################################
 #managerRoomID = "Y2lzY29zcGFyazovL3VzL1JPT00vNGU1Yzk3YjAtNDQ3YS0xMWU4LWFjMjMtZjMwYWJmMTViZWNk"  #with Paulo
-managerRoomID = "Y2lzY29zcGFyazovL3VzL1JPT00vNGU3NTczNzAtNGM2OC0xMWU4LTg3NmEtNGYyZTM0MDAyNjRm"  #without Paulo
+#managerRoomID = "Y2lzY29zcGFyazovL3VzL1JPT00vNGU3NTczNzAtNGM2OC0xMWU4LTg3NmEtNGYyZTM0MDAyNjRm"  #without Paulo
+managerRoomID = "Y2lzY29zcGFyazovL3VzL1JPT00vOGRiN2I3NTAtODhkMS0xMWU4LTkzNzYtYzU0YzIzNDE1ZTdj" #Demo
+
 ACCESS_TOKEN = "MjA1ODg3MGYtMWVhYi00OTBlLTkwYmQtZDUyOTAzODAzN2I4ZmU5NmRmNDAtY2Ex"
 bot_email = "brainsparktest@sparkbot.io"
 botName = "BrainSparkTest"
